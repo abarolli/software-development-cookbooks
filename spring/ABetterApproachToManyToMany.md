@@ -2,18 +2,20 @@
 
 ## Problem
 
-Spring Data JPA offers an annotation for simple many-to-many mappings, at `jakarta.persistence.ManyToMany`.
-This is useful for simple cases when there is no additional information bound to the association; however,
-in cases where there _is_ additional information needed, this solution is insufficient.
+Spring Data JPA offers an annotation for many-to-many mappings, at `jakarta.persistence.ManyToMany`.
+This is useful for simple cases where there is no additional information bound to the relationship; however,
+in cases where there _is_ additional information needed to fully describe the relationship,
+this solution is insufficient.
 
 Consider an issue tracking system, like Jira. Many users can be assigned to an issue and many issues can be
 assigned to a user. We should also track when an issue was assigned to a user, so the junction table will have
-an additional field, `assigned_at`. Using the `ManyToMany` annotation here will be insufficient here as it won't allow
+an additional field, `assigned_at`. Using the `ManyToMany` annotation here will be insufficient as it won't allow
 us to customize the junction table.
 
 ## Solution
 
-Let's define a many-to-many association between a `User` and `Issue` entity.
+Proceeding with the issue tracker example, let's define a many-to-many relationship
+between a `User` and `Issue` entity.
 
 Start by defining the entities (3rd party imports have been excluded):
 
@@ -125,8 +127,6 @@ public class IssueAssignee {
 
 There are a few new annotations here: `EmbeddedId` (more later), `ManyToOne`, `MapsId`, and `JoinColumn`.
 
-Let's analyze each:
-
 1. `ManyToOne` -> tells Data JPA that **many** IssueAssignees can be associated to **one** issue/user
 2. `MapsId` -> references a field that is used to build the composite primary key (the `EmbeddedId` id)
 3. `JoinColumn` -> gives explicit name to the column used in the junction table (otherwise Spring uses defaults)
@@ -144,6 +144,7 @@ import java.io.Serializable;
 @Setter
 @Embeddable
 public class IssueAssigneeId implements Serializable {
+    // These attributes are what get referenced by the @MapsId annotations in IssueAssignee entity
     private Long issueId;
     private Long userId;
 }
