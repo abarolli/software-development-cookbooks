@@ -151,7 +151,8 @@ public class IssueAssigneeId implements Serializable {
 ```
 
 Note that types meant to represent composite key fields must implement `Serializable` and
-be wrapped in `@Embeddable`.
+be wrapped in `@Embeddable`; this is what allows them to be wrapped in the `@EmbeddedId`
+annotation later.
 
 Create the repositories to make data access easy.
 
