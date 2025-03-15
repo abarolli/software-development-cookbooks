@@ -19,7 +19,7 @@ DTOs. This keeps the controller lightweight and independent of any entity implem
 
 Avoid hardcoding the DTO mapping like this:
 
-#### Example hardcoded DTO mappings for Issue
+#### Example hardcoded DTO mapping for Issue
 
 ```java
 public class IssueDTO {
@@ -46,4 +46,4 @@ This approach is error prone and liable to drift away from the entity it's tryin
 added to the entity but not added to the DTO and vice versa). Moreover, now the DTO and entity are
 tightly coupled.
 
-A better approach is to delegate the mapping responsibility to an separate Mapper class.
+A better approach is to delegate the mapping responsibility to a separate Mapper class.
