@@ -117,7 +117,7 @@ public interface IssueMapper {
 
 MapStruct is a code generator; it uses the interface above to generate a concrete implementation
 of the mapper at compile time. MapStruct follows a convention over configuration approach; some
-appropriate convention is used to map from one type to anothas;lkasier in most cases, depending on the input
+appropriate convention is used to map from one type to another in most cases, depending on the input
 and output type. In the example above, we didn't have to explicitly tell MapStruct to convert the enums
 IssueStatus and IssuePriority to their name counterparts; it will do so automatically. We also didn't
 explicitly tell it to handle the mapping from a Set of IssueAssignees to a List of UserDTOs; we simply
