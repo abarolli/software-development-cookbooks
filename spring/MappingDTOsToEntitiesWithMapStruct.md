@@ -149,7 +149,7 @@ public class IssueCreateRequestDTO {
 }
 ```
 
-#### Example POST request using new DTOs
+#### Example POST request using new Mapper and DTOs
 
 ```java
 // IssueController
