@@ -64,6 +64,10 @@ public class Issue {
 #### Example hardcoded DTO mapping for Issue entity
 
 ```java
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class IssueCreateRequestDTO {
     private String title;
     private String description;
@@ -128,6 +132,22 @@ Understanding the annotations above:
 
 1. Mapper -> wraps the interface and tells MapStruct to generate a mapper using it
 2. Mapping -> configure how certain attributes with different names should be handled or ignored if applicable
+
+Now the DTO can be simplified to just its attributes with their corresponding getters and setters:
+
+```java
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+public class IssueCreateRequestDTO {
+    private String title;
+    private String description;
+    private String status;
+    private String priority;
+    private List<UserDTO> assignees = new ArrayList<>();
+}
+```
 
 #### Example POST request using new DTOs
 
