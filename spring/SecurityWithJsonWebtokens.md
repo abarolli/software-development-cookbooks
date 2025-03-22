@@ -1,4 +1,4 @@
-The following dependencies are necessary to enable Spring Security with JsonWebtoken for authorization.
+The following dependencies are necessary to enable Spring Security with JsonWebtoken for authentication/authorization.
 
 ```java
 implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -7,7 +7,7 @@ runtimeOnly 'io.jsonwebtoken:jjwt-impl'
 runtimeOnly 'io.jsonwebtoken:jjwt-jackson'
 ```
 
-First create the user entity. This should store user info, including credentials.
+First create the user entity. This should store user info, including credentials (password).
 
 ```java
 import java.util.HashSet;
@@ -80,7 +80,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 ```
 
 `findByUsername(String username)` leverages Spring Data JPAs `findBy` derived query methods
-to easily lookup a user by their username.
+to easily lookup a user by their username without explicitly writing a query for it.
 
 Then create the AppUserDetails class, which implements the builtin UserDetails interface:
 
@@ -460,7 +460,32 @@ The login handler performs the following:
         return ResponseEntity.ok(new AuthResponseDto(token));
 ```
 
-When `authenticationManager.authenticate()` is called, it uses a user-defined UserDetailsService to load
+The two dtos involved in the authentication, `AuthResponseDto` and `AuthRequestDto` are defined below:
+
+```java
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class AuthRequestDto {
+    @NotBlank
+    private String username;
+    @NotBlank
+    private String password;
+}
+```
+
+```java
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class AuthResponseDto {
+    private String token;
+}
+```
+
+When `authenticationManager.authenticate()` is called during login, it calls a user-defined UserDetailsService to load
 the user details. Let's define this service bean now.
 
 ```java
@@ -490,6 +515,28 @@ public class AppUserDetailsService implements UserDetailsService {
 }
 ```
 
-The `username` parameter is determined by the principal of the UsernamePasswordAuthenticationToken.
-We provided the principal with `credentials.getUsername()` earlier when creating the UsernamePasswordAuthenticationToken
-in the login handler, so that's exactly what gets passed here.
+The `username` parameter is determined by the principal of the `UsernamePasswordAuthenticationToken` that was provided
+to the `authenticate` method. We provided the principal with `credentials.getUsername()` earlier when creating the
+`UsernamePasswordAuthenticationToken` in the login handler, so that's exactly what gets passed here.
+
+With that, the app is secured and ready to use JWT authentication. Here's an example flow:
+
+1. User logs in at the login endpoint
+
+```bash
+# request
+curl -H "Content-type: application/json" -d '{"username": "<username>", "password": "<password>"}' http://localhost:8080/auth/login
+
+# response
+# {"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvYmFyb2xsaXMiLCJyb2xlcyI6WyJVU0VSIl0sImlhdCI6MTc0MjU4OTM5MCwiZXhwIjoxNzQyNTkyOTkwfQ.zYdIDfbmEB7nfwe9H2E5qwUYeKIMBsVY0rbJdu0Hz-4"}
+```
+
+2. The token is stored locally by the client and used in any subsequent requests to the application
+
+```bash
+#  request
+curl -H "Content-type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvYmFyb2xsaXMiLCJyb2xlcyI6WyJVU0VSIl0sImlhdCI6MTc0MjU4OTM5MCwiZXhwIjoxNzQyNTkyOTkwfQ.zYdIDfbmEB7nfwe9H2E5qwUYeKIMBsVY0rbJdu0Hz-4" http://localhost:8080/issues/1
+
+#  response
+# {"title":"new issue title","description":"issue description","status":"OPEN","priority":"HIGH","assignees":[],"id":1,"createdAt":"2025-03-21T13:41:37.890272","updatedAt":"2025-03-21T14:05:56.9024288"}
+```
