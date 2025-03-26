@@ -1,3 +1,5 @@
+# Spring Security with Json Web Tokens (JWTs)
+
 The following dependencies are necessary to enable Spring Security with JsonWebtoken for authentication/authorization.
 
 ```java
@@ -151,7 +153,8 @@ public class JwtService {
 
     @PostConstruct // needed because SECRET_KEY is injected after field initialization
     public void init() {
-        key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        var bytes = Base64.getDecoder().decode(SECRET_KEY); // using Base64 for proper byte interpretation
+        key = Keys.hmacShaKeyFor(bytes);
     }
 
     public String generateToken(String username) {
@@ -200,6 +203,9 @@ public class JwtService {
     }
 }
 ```
+
+Note, the SECRET_KEY is injected from the application properties file. Please see [GeneratingARandomSecureKeyForTokenGeneration.md](../java/GeneratingARandomSecureKeyForTokenGeneration.md)
+for info on how to generate such a key for JWT creation.
 
 Next is implementing the authentication filter.
 
