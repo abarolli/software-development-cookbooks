@@ -1,3 +1,5 @@
+# Abstracting a reusable selectable input field
+
 [Chakra UI's Select component](https://chakra-ui.com/docs/components/select) is a React component that allows a user to pick from a list
 of predefined options. It is extremely configurable but this often leads to a large, complex nested structure for even the simplest task.
 
@@ -13,7 +15,7 @@ Consider the example of a simple, selectable field component that's used in a fo
 <Field.Root>...</Field.Root>
 ```
 
-#### the content inside will be wrapped in Controller, which takes a render prop for defining how the field will be rendered
+#### the content inside will be wrapped in Controller, which takes a render prop for defining how the field will be rendered [(known as the "render props pattern")](https://www.patterns.dev/react/render-props-pattern/)
 
 ```js
 <Field.Root>
